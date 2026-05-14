@@ -1,0 +1,73 @@
+import numpy as np  # 导入numpy库，仅用于最后的验证对比，不参与手写乘法
+
+
+def matrix_multiply(A, B):
+    """
+    使用三重循环实现矩阵乘法 C = A × B
+
+    数学定义：
+    若 A 是 m×n 矩阵，B 是 n×p 矩阵，则 C = A B 是一个 m×p 矩阵，
+    其中 C[i][j] = Σ_{k=0}^{n-1} A[i][k] * B[k][j]
+
+    参数：
+        A : list of list 或 二维数组，形状 (m, n)
+        B : list of list 或 二维数组，形状 (n, p)
+
+    返回：
+        C : list of list，形状 (m, p) 的矩阵乘积
+    """
+    # 获取A的行数m和列数n（A的列数必须等于B的行数）
+    m = len(A)  # A的行数，即结果矩阵C的行数
+    n = len(A[0])  # A的列数，也是求和索引k的遍历范围
+
+    # 获取B的行数（必须等于n）和列数p
+    n_check = len(B)  # B的行数，用于维度检查
+    p = len(B[0])  # B的列数，即结果矩阵C的列数
+
+    # 维度兼容性检查：A的列数必须等于B的行数
+    if n != n_check:  # 如果A的列数不等于B的行数
+        raise ValueError(
+            f"矩阵维度不匹配: A的列数({n}) != B的行数({n_check})"
+        )  # 抛出异常，提示维度错误
+
+    # 初始化结果矩阵C，大小为 m×p，全部元素置0
+    C = [[0.0] * p for _ in range(m)]  # 使用列表推导式创建m行p列的零矩阵
+
+    # 三重循环计算矩阵乘法的每一个元素
+    for i in range(m):  # 遍历结果矩阵的每一行（对应A的行）
+        for j in range(p):  # 遍历结果矩阵的每一列（对应B的列）
+            # 计算C[i][j] = Σ_{k} A[i][k] * B[k][j]
+            s = 0.0  # 初始化累加和为0.0（使用浮点数保证精度）
+            for k in range(n):  # 遍历求和索引k，从0到n-1
+                s += A[i][k] * B[k][j]  # 乘积累加：A的第i行第k列 × B的第k行第j列
+            C[i][j] = s  # 将累加结果存入C[i][j]
+    return C  # 返回矩阵乘法的结果
+
+
+if __name__ == "__main__":
+    # 定义测试矩阵 A = [[1, 2], [3, 4]]
+    A = [
+        [1, 2],
+        [3, 4]
+    ]  # A 是一个 2×2 矩阵
+
+    # 定义测试矩阵 B = [[5, 6], [7, 8]]
+    B = [
+        [5, 6],
+        [7, 8]
+    ]  # B 是一个 2×2 矩阵
+
+    # 调用手写的矩阵乘法函数
+    C = matrix_multiply(A, B)  # C = A × B
+
+    # 打印结果矩阵，便于观察
+    print("手写矩阵乘法结果 C = A × B:")
+    for row in C:  # 遍历结果的每一行
+        print(row)  # 打印该行
+
+    # 使用numpy验证结果的正确性（仅用于对比，不参与手写计算）
+    np_A = np.array(A)  # 将A转换为numpy数组
+    np_B = np.array(B)  # 将B转换为numpy数组
+    np_C = np.dot(np_A, np_B)  # numpy的矩阵乘法结果，注意此处仅用于验证，并非题目要求的手写部分
+    print("\nnumpy验证结果 (np.dot):")
+    print(np_C)  # 打印numpy的计算结果，应与手写结果一致
